@@ -18,7 +18,31 @@ export const getUserProfile = async (req, res) => {
 		res.status(500).json({ error: error.message });
 	}
 };
-
+export const updateUserMeasurements = async (req, res) => {
+	const userId = req.user._id;
+	const { measurements, selectedApparel } = req.body; // Destructure selectedApparel from req.body
+  
+	try {
+	  let user = await User.findById(userId);
+  
+	  if (!user) {
+		return res.status(404).json({ message: "User not found" });
+	  }
+  
+	  // Update specific measurement type
+	  user.measurements[selectedApparel] = measurements;
+  
+	  // Save updated user object
+	  user = await user.save();
+  
+	  res.status(200).json({ message: "Measurements updated successfully", user });
+	} catch (error) {
+	  console.error("Error updating measurements:", error.message);
+	  res.status(500).json({ message: "Failed to update measurements" });
+	}
+  };
+  
+  
 export const followUnfollowUser = async (req, res) => {
 	try {
 		const { id } = req.params;

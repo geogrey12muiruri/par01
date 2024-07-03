@@ -4,7 +4,7 @@ import LoginPage from './pages/auth/login/LoginPage'
 import SignUpPage from './pages/auth/signup/SignUpPage'
 import NotificationPage from './pages/notification/NotificationPage'
 import ProfilePage from './pages/profile/ProfilePage'
-import Sidebar from './components/Sidebar'
+// import Sidebar from './components/Sidebar'
 import RightPanel from './components/common/RightPanel'
 import { Toaster } from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
@@ -42,11 +42,11 @@ function App() {
   
 
   return (
-<div className='flex max-w-6xl mx-auto'>
+<div className='w-full mx-auto'>
 	
-{authUser && <Sidebar />}
+
 			<Routes>
-			<Route path='/' element={authUser ? <HomePage /> : <Navigate to='/login' />} />
+			<Route path='/' element={authUser ? <HomePage authUser={authUser} /> : <Navigate to='/login' />} />
 				<Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to='/' />} />
 				<Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to='/' />} />
 				<Route path='/notifications' element={authUser ? <NotificationPage /> : <Navigate to='/login' />} />
