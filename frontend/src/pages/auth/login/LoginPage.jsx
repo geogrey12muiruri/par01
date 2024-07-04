@@ -1,15 +1,17 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { MdOutlineMail, MdPassword } from "react-icons/md";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSpring, animated } from "react-spring";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient();  
   const [showLoginForm, setShowLoginForm] = useState(false);
 
   const {
@@ -27,20 +29,34 @@ const LoginPage = () => {
           },
           body: JSON.stringify({ username, password }),
         });
-
+  
         const data = await res.json();
-
+  
         if (!res.ok) {
-          throw new Error(data.error || "Something went wrong");
+          throw new Error(data.message || "Something went wrong");
         }
+  
+        // Store the user data (including role) in your state management or context
+        localStorage.setItem('authUser', JSON.stringify(data));
+  
+        return data;
       } catch (error) {
-        throw new Error(error);
+        throw new Error(error.message);
       }
     },
     onSuccess: () => {
-      // refetch the authUser
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      console.log("onSuccess called");
+      const authUser = JSON.parse(localStorage.getItem('authUser'));
+      console.log("Auth User Role:", authUser.role);
+      if (authUser.role === "admin") {
+        console.log("Redirecting to dashboard");
+        navigate("/dashboard"); // Use navigate instead of history.push
+      } else {
+        console.log("Redirecting to home");
+        navigate("/"); // Use navigate instead of history.push
+      }
     },
+  
   });
 
   // Spring animation config for the elements

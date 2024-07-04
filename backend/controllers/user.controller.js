@@ -20,7 +20,7 @@ export const getUserProfile = async (req, res) => {
 };
 export const updateUserMeasurements = async (req, res) => {
 	const userId = req.user._id;
-	const { measurements, selectedApparel } = req.body; // Destructure selectedApparel from req.body
+	const { measurements, selectedApparel } = req.body;
   
 	try {
 	  let user = await User.findById(userId);
@@ -29,11 +29,21 @@ export const updateUserMeasurements = async (req, res) => {
 		return res.status(404).json({ message: "User not found" });
 	  }
   
+	  // Ensure the measurements object exists
+	  if (!user.measurements) {
+		user.measurements = {};
+	  }
+  
+	  // Check if measurements for the selected apparel already exist
+	  if (user.measurements[selectedApparel] && Object.keys(user.measurements[selectedApparel]).length > 0) {
+		return res.status(400).json({ message: "Measurements for this apparel already exist" });
+	  }
+  
 	  // Update specific measurement type
 	  user.measurements[selectedApparel] = measurements;
   
 	  // Save updated user object
-	  user = await user.save();
+	  await user.save();
   
 	  res.status(200).json({ message: "Measurements updated successfully", user });
 	} catch (error) {
@@ -41,6 +51,7 @@ export const updateUserMeasurements = async (req, res) => {
 	  res.status(500).json({ message: "Failed to update measurements" });
 	}
   };
+  
   
   
 export const followUnfollowUser = async (req, res) => {

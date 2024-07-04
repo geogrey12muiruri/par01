@@ -4,12 +4,13 @@ import LoginPage from './pages/auth/login/LoginPage'
 import SignUpPage from './pages/auth/signup/SignUpPage'
 import NotificationPage from './pages/notification/NotificationPage'
 import ProfilePage from './pages/profile/ProfilePage'
-// import Sidebar from './components/Sidebar'
+import Sidebar from './components/Sidebar'
 import RightPanel from './components/common/RightPanel'
 import { Toaster } from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 import Landing from './pages/landingpage/Landing';
+import Dashboard from './pages/admin/Dashboard'
 function App() {
 	const { data: authUser, isLoading } = useQuery({
 		// we use queryKey to give a unique name to our query and refer to it later
@@ -44,15 +45,18 @@ function App() {
   return (
 <div className='w-full mx-auto'>
 	
+	
 
 			<Routes>
 			<Route path='/' element={authUser ? <HomePage authUser={authUser} /> : <Navigate to='/login' />} />
 				<Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to='/' />} />
+				<Route path='/dashboard' element={!authUser ? <Dashboard /> : <Navigate to='/' />} />
 				<Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to='/' />} />
 				<Route path='/notifications' element={authUser ? <NotificationPage /> : <Navigate to='/login' />} />
 				<Route path='/profile/:username' element={authUser ? <ProfilePage /> : <Navigate to='/login' />} />
 				<Route path='/landing' element={authUser ? <Landing /> : <Navigate to='/login' />} />
 			</Routes>
+			{authUser && <Sidebar />}
 			{authUser && <RightPanel />}
 			<Toaster />
 		</div>
